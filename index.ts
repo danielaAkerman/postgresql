@@ -1,53 +1,63 @@
 import { Sequelize, Model, DataTypes } from "sequelize";
+import { sequelize } from "./db";
+import { User } from "./db/user";
+import { Product } from "./db/product";
 
-const sequelize = new Sequelize(
-  "postgres://ttvstpna:Js9NiIcRNAwTfWFraIdogwCKY2PonsrO@motty.db.elephantsql.com/ttvstpna"
-);
+// LAS BASES DE DATOS RELACIONALES APORTAN ESTRUCTURA Y COMPLEJIDAD
+// OFRECEN OPORTUNIDADES PARA ESCALAR
+// COLLECTIONS Y DOCS EN NOSQL
+// SON TABLAS Y REGISTROS EN SQL
 
-(async () => {
-  try {
-    await sequelize.authenticate();
-    console.log("Connection has been established successfully.");
-  } catch (error) {
-    console.error("Unable to connect to the database:", error);
-  }
+// USAMOS UNA DB PostGres PERO ALOJADA EN LA NUBE. (as a Service)
 
-  class User extends Model {}
-  User.init(
-    {
-      username: { type: DataTypes.STRING, allowNull: false },
-      birthday: { type: DataTypes.DATEONLY },
-    },
-    { sequelize, modelName: "User" }
-  );
+// Las librerías ORM nos ayudan a interactuar con las SQL sin conocer el lenguaje
+// ORM: Object Relational Mapping (mapeo objeto-relacional)
+// Parsean los valores q recibimos desde DB y lo utilizamos como un objeto
+// Tamb parsea nuestros objetos y crea las queries necesarias para interactuar con la DB
+// Luego de crear o modificar tablas, se lo tenemos que indicar a Sequalize.
+// La opción alter es la que vamos a usar de ahora en más
+// para modificar tablas sin empezar de cero,
+// a diferencia de la opción force que elimina todo y lo vuelve a crear.
+// La opción alter le indica a Sequalize que modifique lo menos posible.
 
-  await sequelize.sync({
-    alter: true,
-  });
+async function main() {
+  // const resp = await sequelize.sync({ alter: true });
+  // console.log(resp)
 
-  //   const dani = await User.create({
-  //     username: "Daniela",
-  //     birthday: "1991-03-14",
-  //   });
+  // const productNew = await Product.create({
+  //   title: "Parlante",
+  //   price: 2800,
+  // });
 
-  //   console.log("User creada", dani.toJSON());
+  const todos = await Product.findAll();
+  console.log({"PRODUCTOS:": todos.map((i) => i.dataValues)});
 
-  const usersCreados = await User.findAll();
+  // console.log("EL PRODUCTO:", productNew);
 
-  //   console.log(usersCreados);
+  // const todos = await User.findAll();
+  // console.log({"REGISTROS": todos.map((i) => i.dataValues.otrocampo)});
 
-  for (const u of usersCreados) {
-    console.log(u.dataValues);
-  }
+  // const danie = await User.findByPk(2);
+  // console.log(danie.dataValues.username)
 
-  //   for (const u of usersCreados) {
-  //     console.log(u.toJSON());
-  //   }
+  // const dani2 = await User.findAll({
+  //   where: {
+  //     otrocampo: "Hola",
+  //   },
+  // });
 
-  //   console.log({
-  //     usersCreados: usersCreados.map((i) => {
-  //       i.dataValues;
-  //     }),
-  //   });
-  
-})();
+  // console.log(dani2.map((i) => i.dataValues));
+}
+main();
+
+// const usersCreados = await User.findAll();
+
+// for (const u of usersCreados) {
+//   console.log(u.dataValues);
+// }
+
+//   for (const u of usersCreados) {
+//     console.log(u.toJSON());
+//   }
+
+// console.log({ "Users Creados": usersCreados.map((i) => i.dataValues) });
